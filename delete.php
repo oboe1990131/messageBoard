@@ -1,32 +1,41 @@
 <?php
 session_start();
 if(!isset($_SESSION['useraccount'])){
-    echo '<script>alert("請循正規管道登入。")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./login.php">';
-    die;
+    header("Refresh:3; url=./login.php");
+    echo "請遵循正規管道登入";
+    exit;
 }
 
-//先檢驗id，看使用者有沒有利用開發工具偷改id來竄改別人留言
-include ("connect.php");
 $id = $_GET["id"];
-$sql = "SELECT `id`, `message`, `auther_id`, `member_id`
+// TODO   id也要做驗證，因為也是前端傳來的
+$member_id = $_SESSION["member_id"];
+
+//先檢驗id，看使用者有沒有利用開發工具偷改id來竄改別人留言
+// TODO這邊改成用count這個方法，這樣也剛好可以跟下面的if條件式配合
+include ("connect.php");
+$sql_chkid = "SELECT `id`, `message`, `auther_id`, `member_id`
         FROM `usermessage` AS u
         LEFT JOIN `member` AS m
-        ON `auther_id` = `member_id`
-        WHERE `id`= $id AND `auther_id` = '{$_SESSION["member_id"]}'";
-$result = mysqli_query($db, $sql) ?? die("insert error");  //去資料庫幫我拉出那個我要編輯的資料
-$row = mysqli_fetch_array($result); //幫我把抓到的陣列資料轉成非陣列，可以顯示出來之資料型別
+        ON u.`auther_id` = m.`member_id`
+        WHERE `id`= ? AND `auther_id` = ?";
+$stmt_chkid = mysqli_prepare($db, $sql_chkid);
+mysqli_stmt_bind_param($stmt_chkid, "ii", $id, $member_id);
+mysqli_stmt_execute($stmt_chkid);
+$result = mysqli_stmt_get_result($stmt_chkid);
+
+
 
 if(mysqli_num_rows($result) == 0){
-    echo '<script>alert("you are deleting the wrong message.")</script>';
+    echo '<script>alert("您刪錯留言了")</script>';
     echo '<meta http-equiv="refresh" content="0; url=./indext.php">';
     die;
 }
 else{
     //去把我指定的留言刪掉
-    $id= $_GET["id"]; //把剛剛抓到的辨識刪除目標id先存進id變數中
-    $sql= "DELETE FROM `usermessage` WHERE `id`= $id";
-    $result= mysqli_query($db, $sql) ?? die("delete error");
+    $sql_delete= "DELETE FROM `usermessage` WHERE `id`= ?";
+    $stmt_delete = mysqli_prepare($db, $sql_delete);
+    mysqli_stmt_bind_param($stmt_delete, "i", $id);
+    mysqli_stmt_execute($stmt_delete);
     echo "<script>";
     echo "alert('您已刪除成功！')";
     echo "</script>";

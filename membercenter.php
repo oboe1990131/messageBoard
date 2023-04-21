@@ -1,9 +1,9 @@
 <?php
 session_start();
 if(!isset($_SESSION['useraccount'])){
-    echo '<script>alert("請循正規管道登入。")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./login.php">';
-    die;
+    header("Refresh:3; url=./login.php");
+    echo "請遵循正規管道登入";
+    exit;
 }
 
 include('connect.php');
@@ -39,6 +39,10 @@ $row = mysqli_fetch_array($result);
         <p>
             <label>確認新密碼:</label>
             <input type="password" name="passwordoublechk">
+        </p>
+        <p>
+            <label>暱稱:</label>
+            <input type="text" name="nickname">
         </p>
         
 

@@ -2,9 +2,9 @@
 // 這邊是用session擋住直接輸入網址的使用者
 session_start();
 if(!isset($_SESSION["useraccount"])){
-    echo '<script>alert("請循正規管道登入。")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./login.php">';
-    die;
+    header("Refresh:3; url=./login.php");
+    echo "請遵循正規管道登入";
+    exit;
 }
 
 //先檢驗id，看使用者有沒有利用開發工具偷改id來竄改別人留言

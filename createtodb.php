@@ -1,9 +1,9 @@
 <?php
 session_start();
 if(!isset($_SESSION["useraccount"])){
-    echo '<script>alert("請循正規管道登入。")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./login.php">';
-    die;
+    header("Refresh:3; url=./login.php");
+    echo "請遵循正規管道登入";
+    exit;
 }
 
 //把留言頁面送出之  留言者id & 留言內容  先放進變數裡面

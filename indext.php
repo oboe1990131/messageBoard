@@ -2,29 +2,32 @@
 //session機制
 session_start();
 if(!isset($_SESSION["useraccount"])){
-  echo '<script>alert("請循正規管道登入。")</script>';
-  echo '<meta http-equiv="refresh" content="0; url=./login.php">';
-  die;
+  header("Refresh:3; url=./login.php");
+  echo "請遵循正規管道登入";
+  exit;
 }
 
 //連線資料庫，查詢留言
+// TODO我沒有用到的欄位也要把它刪掉
 include("connect.php");
 $find = (isset($_GET["find"])) ? trim($_GET["find"]) : null;
-$sql = "SELECT `id`, `useraccount`, `message`, `auther_id`, `member_id`
+$sql = "SELECT `id`, `nickname`, `message`, `auther_id`, `member_id`
         FROM `usermessage` AS u
         LEFT JOIN `member` AS m ON u.`auther_id` = m.`member_id`";
 
-if($find != ""){
-  $sql .= "WHERE `useraccount` LIKE ? OR `message` LIKE ?";
+if($find != "" && isset($find)){
+  $sql .= "WHERE `nickname` LIKE ? OR `message` LIKE ?";
 }
+
+$sql .= " ORDER BY u.`id` DESC";
 
 $stmt_find = mysqli_prepare($db, $sql);
 
-if($find != ""){
-  // mysqli_stmt_bind_param($stmt_find, "s", $find);
+if($find != "" && isset($find)){
   $like_str = "%{$find}%";
   mysqli_stmt_bind_param($stmt_find, "ss", $like_str, $like_str);
 }
+
 
 mysqli_stmt_execute($stmt_find);
 $result_find = mysqli_stmt_get_result($stmt_find);
@@ -79,7 +82,7 @@ $result_find = mysqli_stmt_get_result($stmt_find);
               
             <tr>
               <td><?php echo $row["id"]; ?> </td>   <!--印出你在資料庫抓到的東西-->
-              <td><?php echo $row["useraccount"]; ?> </td>
+              <td><?php echo $row["nickname"]; ?> </td>
               <td><?php echo $row["message"]; ?><hr> </td>
               <td>
               <?php  if($_SESSION["member_id"] == $row["auther_id"]) :?>

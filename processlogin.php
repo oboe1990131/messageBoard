@@ -31,7 +31,6 @@ else{
         $_SESSION["member_id"] = $row["member_id"];
         // 那其中我這個id是後面串表要使用的
         $_SESSION["useraccount"] = $row["useraccount"];
-        $_SESSION["password"] = $row["password"];
         header("Location: indext.php");
     }
 }
