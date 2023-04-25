@@ -84,6 +84,7 @@ $result_find = mysqli_stmt_get_result($stmt_find);
               <td><?php echo htmlspecialchars($row["nickname"]); ?> </td>
               <td><?php echo $row["message"]; ?><hr> </td>
               <td><?php echo $row["mood"]; ?><hr> </td>
+              
               <td>
               <?php  if($_SESSION["member_id"] == $row["auther_id"]) :?>
                     <a href="edit.php?id=<?php echo $row["id"] ?>">編輯</a>

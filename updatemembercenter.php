@@ -36,6 +36,8 @@ if($password === null || $passwordoublechk === null || $nickname === null){
 
 
 // 使用者的密碼欄位為空，代表使用者             """"""""只想單獨改暱稱"""""""""
+
+
 elseif(($password === "" || $passwordoublechk === "") && ($nickname !== "")){
 
     // 我就看使用者輸入的暱稱是否有跟別人重複，那這邊的邏輯根本就是registtodb那邊的邏輯
@@ -135,7 +137,7 @@ elseif(($password !== "" && $passwordoublechk !== "") && ($nickname !== "")){
         // 把使用者輸入的密碼雜湊
         $hash = hash("sha256", $password); // 將密碼做雜湊處理
 
-        
+
         //查詢密碼是否與舊的一樣
         include("connect.php");
         $sql_check = "SELECT * FROM `member` WHERE `useraccount` = ? AND `password` = ?";

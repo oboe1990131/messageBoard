@@ -50,6 +50,7 @@ $row = mysqli_fetch_array($result);
         <button type="submit" style="width: 150px; height: 30px">修改</button>
     </form>
     
+    
     <a href="indext.php">回首頁</a>
 
 </body>

@@ -48,6 +48,7 @@ else{
 
         <label>您的留言</label>
         <textarea cols="100" rows="10" name="message"><?php echo nl2br($row["message"]); ?></textarea>
+
         
         <p>請告訴我們您現在的心情如何：</p>
         <!-- TODO  再精簡化，學長說的其實不是這個方法-->

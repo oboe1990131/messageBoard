@@ -26,6 +26,8 @@ $nickname = (isset($_POST['nickname'])) ? $_POST['nickname'] : null;
 
 
 
+
+
 // 如果使用者今天只送密碼過來，就代表使用者想改密碼
 
 // 如果使用者今天只送暱稱過來，就代表使用者想改暱稱
