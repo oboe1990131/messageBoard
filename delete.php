@@ -11,6 +11,7 @@ $member_id = $_SESSION["member_id"];
 
 //先檢驗id，看使用者有沒有利用開發工具偷改id來竄改別人留言
 // TODO完成，這邊改成用count這個方法，這樣也剛好可以跟下面的if條件式配合
+// 我做了一個小測試
 include ("connect.php");
 $sql_chkid = "SELECT COUNT(*)
         FROM `usermessage` AS u
