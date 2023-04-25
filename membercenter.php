@@ -29,7 +29,7 @@ $row = mysqli_fetch_array($result);
     <h1 style="text-align: center">會員中心</h1>
     <hr>
 
-    <form action="updatemembercenter.php" method="post">
+    <form action="updatemembercenter copy.php" method="post">
         <p>
             <label>帳號:<?php  echo $row['useraccount'];  ?></label>
         </p>
