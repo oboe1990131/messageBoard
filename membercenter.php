@@ -15,7 +15,6 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $row = mysqli_fetch_array($result);
 
-
 ?>
 
 <!DOCTYPE html>

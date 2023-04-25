@@ -135,6 +135,7 @@ elseif(($password !== "" && $passwordoublechk !== "") && ($nickname !== "")){
         // 把使用者輸入的密碼雜湊
         $hash = hash("sha256", $password); // 將密碼做雜湊處理
 
+        
         //查詢密碼是否與舊的一樣
         include("connect.php");
         $sql_check = "SELECT * FROM `member` WHERE `useraccount` = ? AND `password` = ?";

@@ -32,6 +32,7 @@ else{
         //我用mysqli_stmt_get_result()取得我剛剛查詢得到哦東西，會是一列陣列
         //再用mysqli_num_rows()函數，來得知  "重複的筆數"  是幾筆。(你會得到一個整數結果)
 
+        
         if(mysqli_num_rows($result_check) > 0){
             echo '<script>alert("這個帳號或暱稱已經有人註冊了，請重新輸入！")</script>';
             header("Refresh:0; url=./regist.php");

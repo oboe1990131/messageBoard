@@ -23,6 +23,7 @@ mysqli_stmt_execute($stmt_chkid);
 $result = mysqli_stmt_get_result($stmt_chkid);
 $row = mysqli_fetch_array($result);
 
+
 if($row[0] == 0){
     echo '<script>alert("您刪錯留言了")</script>';
     header("Refresh:0; url=./indext.php");
