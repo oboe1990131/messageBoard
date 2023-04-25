@@ -14,6 +14,8 @@ mysqli_stmt_bind_param($stmt, "s", $useraccount);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $row = mysqli_fetch_array($result);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -38,16 +40,18 @@ $row = mysqli_fetch_array($result);
         </p>
         <p>
             <label>確認新密碼:</label>
-            <input type="password" name="passwordoublechk">
+            <input type="password" name="passwordoublechk"/>
         </p>
+
         <p>
             <label>暱稱:</label>
-            <input type="text" name="nickname">
+            <input type="text" name="nickname" value="<?php echo htmlspecialchars($row["nickname"]);?>">
         </p>
         
-
-        <button type="submit" style="width: 80px; height: 30px">送出</button>
-        <a href="indext.php">回首頁</a>
+        <button type="submit" style="width: 150px; height: 30px">修改</button>
     </form>
+    
+    <a href="indext.php">回首頁</a>
+
 </body>
 </html>

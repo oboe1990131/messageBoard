@@ -9,13 +9,13 @@ if(!isset($_SESSION["useraccount"])){
 
 $id = $_POST["id"];
 $member_id = $_SESSION["member_id"];
+$mood = $_POST["mood"];
 
 //先檢驗id，看使用者有沒有利用開發工具偷改id來竄改別人留言
 include ("connect.php");
-$sql_chkid = "SELECT `id`, `message`, `auther_id`, `member_id`
+$sql_chkid = "SELECT u.`id`, u.`message`, u.`auther_id`, m.`member_id`
         FROM `usermessage` AS u
-        LEFT JOIN `member` AS m
-        ON u.`auther_id` = m.`member_id`
+        LEFT JOIN `member` AS m ON u.`auther_id` = m.`member_id`
         WHERE `id`= ? AND `auther_id` = ?";
 $stmt_chkid = mysqli_prepare($db, $sql_chkid);
 mysqli_stmt_bind_param($stmt_chkid, "ii", $id, $member_id);
@@ -23,9 +23,9 @@ mysqli_stmt_execute($stmt_chkid);
 $result = mysqli_stmt_get_result($stmt_chkid);
 
 if(mysqli_num_rows($result) == 0){
-    echo '<script>alert("you are editing the wrong message.")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./indext.php">';
-    die;
+    echo '<script>alert("你編輯錯留言了!")</script>';
+    header("Refresh:0; url=./indext.php");
+    exit;
 }
 else{
     //把留言頁面送出之  id & 留言內容  放進變數裡面 (查gpt查到的另一種方法，可將特殊字符替換)
@@ -36,8 +36,8 @@ else{
 $message = (isset($_POST["message"])) ? $_POST["message"] : null;
 if($message == ""){
     echo '<script>alert("您似乎忘記填寫流言了，請再確定一下！")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./create.php">';
-    die;
+    header("Refresh:0; url=./create.php");
+    exit;
 }
 else{
     $message = htmlspecialchars($message);
@@ -47,11 +47,11 @@ else{
 }
 
 // 更新留言
-$sql = "UPDATE `usermessage` SET `message` = ? WHERE `id` = ?";
+$sql = "UPDATE `usermessage` SET `message` = ?, `mood` = ? WHERE `id` = ?";
 $stmt = mysqli_prepare($db, $sql);
-mysqli_stmt_bind_param($stmt, "si", $message, $id);
+mysqli_stmt_bind_param($stmt, "sii", $message, $mood, $id);
 mysqli_stmt_execute($stmt);
 mysqli_stmt_close($stmt);
 echo '<script>alert("留言更新成功！")</script>';
-echo '<meta http-equiv="refresh" content="0; url=./indext.php">';
+header("Refresh:0; url=./indext.php");
 ?>

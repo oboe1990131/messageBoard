@@ -25,6 +25,10 @@
             <label>確認密碼:</label>
             <input type="password"name="passwordoublechk"/>
         </p>
+        <p>
+            <label>暱稱:</label>
+            <input type="text"name="nickname"/>
+        </p>
         <hr>
         <button type="submit" style="width: 80px; height: 30px">送出</button>
     </form>

@@ -8,26 +8,24 @@ if(!isset($_SESSION["useraccount"])){
 }
 
 //連線資料庫，查詢留言
-// TODO我沒有用到的欄位也要把它刪掉
 include("connect.php");
 $find = (isset($_GET["find"])) ? trim($_GET["find"]) : null;
-$sql = "SELECT `id`, `nickname`, `message`, `auther_id`, `member_id`
+$sql = "SELECT u.`id`, m.`nickname`, u.`message`, u.`auther_id`, m.`member_id`, u.`mood`, e.`id` AS emotion_id, e.`mood`
         FROM `usermessage` AS u
-        LEFT JOIN `member` AS m ON u.`auther_id` = m.`member_id`";
+        LEFT JOIN `member` AS m ON u.`auther_id` = m.`member_id`
+        LEFT JOIN `emotion` AS e ON u.`mood` = e.`id`";
 
-if($find != "" && isset($find)){
-  $sql .= "WHERE `nickname` LIKE ? OR `message` LIKE ?";
-}
+// TODO這邊sql語法的模組化技術成分很高，要多看
+$where = ($find != "" && isset($find)) ? " WHERE `nickname` LIKE ? OR `message` LIKE ?" : "";
+$order = " ORDER BY u.`id` DESC";
+$query_string = $sql.$where.$order;
 
-$sql .= " ORDER BY u.`id` DESC";
-
-$stmt_find = mysqli_prepare($db, $sql);
+$stmt_find = mysqli_prepare($db, $query_string);
 
 if($find != "" && isset($find)){
   $like_str = "%{$find}%";
   mysqli_stmt_bind_param($stmt_find, "ss", $like_str, $like_str);
 }
-
 
 mysqli_stmt_execute($stmt_find);
 $result_find = mysqli_stmt_get_result($stmt_find);
@@ -72,6 +70,7 @@ $result_find = mysqli_stmt_get_result($stmt_find);
                 <th>流水號</th>
                 <th>留言者</th>
                 <th>留言內容</th>
+                <th>心情</th>
                 <th>操作</th>
             </tr>
 
@@ -82,8 +81,9 @@ $result_find = mysqli_stmt_get_result($stmt_find);
               
             <tr>
               <td><?php echo $row["id"]; ?> </td>   <!--印出你在資料庫抓到的東西-->
-              <td><?php echo $row["nickname"]; ?> </td>
+              <td><?php echo htmlspecialchars($row["nickname"]); ?> </td>
               <td><?php echo $row["message"]; ?><hr> </td>
+              <td><?php echo $row["mood"]; ?><hr> </td>
               <td>
               <?php  if($_SESSION["member_id"] == $row["auther_id"]) :?>
                     <a href="edit.php?id=<?php echo $row["id"] ?>">編輯</a>
