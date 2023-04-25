@@ -4,6 +4,8 @@ if(!isset($_SESSION['useraccount'])){
     header("Refresh:3; url=./login.php");
     echo "請遵循正規管道登入";
     exit;
+
+
 }
 
 $id = $_GET["id"];
@@ -29,6 +31,8 @@ if($row[0] == 0){
     echo '<script>alert("您刪錯留言了")</script>';
     header("Refresh:0; url=./indext.php");
     exit;
+
+    
 }
 else{
     //去把我指定的留言刪掉
