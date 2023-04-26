@@ -183,21 +183,18 @@ $stmt_update = mysqli_prepare($db, $sql_update);
 if(($nickname !== "") && ($password === "")){
     // 如果是想改暱稱，這樣綁定
     mysqli_stmt_bind_param($stmt_update, "ss", $nickname, $_SESSION['useraccount']);
-    echo $nickname;
 }
 
 if(($nickname === "") && ($password !== "")){
     // 如果是想改密碼，這樣綁定
     $hash = hash("sha256", $password);
     mysqli_stmt_bind_param($stmt_update, "ss", $hash , $_SESSION['useraccount']);
-    echo "有綁定密碼";
 }
 
 if(($nickname !== "") && ($password !== "")){
     // 如果想改暱稱、密碼，這樣綁定
     $hash = hash("sha256", $password);
     mysqli_stmt_bind_param($stmt_update, "sss", $nickname, $hash , $_SESSION['useraccount']);
-    echo "有綁定暱稱、密碼";
 }
 /*--------------------------------------------------*/
 
