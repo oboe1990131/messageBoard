@@ -7,9 +7,9 @@
 
 session_start();
 if(!isset($_SESSION["useraccount"])){
-    echo '<script>alert("請循正規管道登入。")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./login.php">';
-    die;
+    echo "請循正規管道登入!";
+    header("Refresh:2; url=./login.php");
+    exit;
 }
 
 
@@ -33,9 +33,10 @@ $nickname = (isset($_POST['nickname'])) ? $_POST['nickname'] : null;
 // 只有打密碼
 // 只有打密碼doublechk
 // 打暱稱+密碼
-// 打暱稱+密碼doublechk，          這邊就統整出，你只要有打密碼，你就要全打，你不能只打一個
-if(($password !== "" && $passwordoublechk === "") || ($password === "" && $passwordoublechk !== "")){
-    echo "你的密碼欄位沒有填完全，請再確認!";
+// 打暱稱+密碼doublechk
+// 都沒打                 ，          這邊就統整出，你只要有打密碼，你就要全打，你不能只打一個
+if(($password !== "" && $passwordoublechk === "") || ($password === "" && $passwordoublechk !== "") || ($nickname === ""  && $password === "" && $passwordoublechk === "")){
+    echo "你的欄位沒有填完全，請再確認!";
     header("Refresh:2; url=./membercenter.php");
     exit;
 }
@@ -60,8 +61,7 @@ elseif($password === null || $passwordoublechk === null || $nickname === null){
 
 
 
-// TODO  要去檢查   如果我自己在用一次相同的暱稱   會發生甚麼事
-// 查詢系列
+
 include("connect.php");
 $sql_check = "SELECT `useraccount`, `password`, `nickname`
                 FROM `member`";
@@ -79,7 +79,7 @@ $where_nickname = (($nickname !== "") && ($password === "")) ? " WHERE `nickname
 $where_password = (($nickname === "") && ($password !== "")) ? " WHERE `useraccount` = ? AND `password` = ?" : "";
 
                 // 如果想查暱稱、密碼，就加這句     但，這樣會有個問題   暱稱重複會被攔下來、密碼重複也會被攔下來
-$where_nickname_password = (($nickname !== "") && ($password != "")) ? " WHERE (`useraccount` = ? AND `password` = ?) OR (`nickname` = ? AND `useraccount` != ?)" : "";
+$where_nickname_password = (($nickname !== "") && ($password !== "")) ? " WHERE (`useraccount` = ? AND `password` = ?) OR (`nickname` = ? AND `useraccount` != ?)" : "";
 
 /*-----------------------------------------------*/
 
@@ -117,14 +117,16 @@ if(($nickname !== "") && ($password !== "")){
 
 
 
-
-
 mysqli_stmt_execute($stmt_check);
 $result_check = mysqli_stmt_get_result($stmt_check);
 $result_check_content = mysqli_fetch_array($result_check);
 
 
-// TODO這邊的工作：幫我看重複     (這邊我不用筆數判斷了，我用帳號來判斷)
+
+
+
+/*----------------------TODO這邊的工作：幫我看重複     (這邊我不用筆數判斷了，我用帳號來判斷)----------------------------*/
+// 如果我查到比數不等於0，          就是有資料，             只要看那個帳號，就可以判斷是甚麼問題
 if($result_check_content['useraccount'] === $_SESSION['useraccount']){
     echo "密碼不可與舊的相同，請再確認!";
     header("Refresh:2; url=./membercenter.php");
@@ -135,7 +137,7 @@ elseif(($result_check_content['useraccount'] !== $_SESSION['useraccount']) && ($
     header("Refresh:2; url=./membercenter.php");
     exit;
 }
-
+/*--------------------------------------------------*/
 
 
 
@@ -150,36 +152,24 @@ elseif(($result_check_content['useraccount'] !== $_SESSION['useraccount']) && ($
 
 /*---------------------檢查沒問題之後，就是去更新使用者想要更新的內容-----------------------------*/
 
-    $sql_update = "UPDATE `member`";
+$sql_update = "UPDATE `member`";
 
 
 
 
 
 /*--------------------------------------------------*/
-$where_nickname = (($nickname != "") && ($password == "")) ? " SET `nickname` = ? WHERE `useraccount` = ?" : "";
+$where_nickname = (($nickname !== "") && ($password === "")) ? " SET `nickname` = ? WHERE `useraccount` = ?" : "";
 
-$whrer_password = (($nickname == "") && ($password != "")) ? " SET `password` = ? WHERE `useraccount` = ?" : "";
+$where_password = (($nickname === "") && ($password !== "")) ? " SET `password` = ? WHERE `useraccount` = ?" : "";
 
-$where_nickname_password = (($nickname != "") && ($password != "")) ? " SET `nickname` = ?, `password` = ? WHERE `useraccount` = ?" : "";
+$where_nickname_password = (($nickname !== "") && ($password !== "")) ? " SET `nickname` = ?, `password` = ? WHERE `useraccount` = ?" : "";
 
 $sql_update .= $where_nickname.$where_password.$where_nickname_password;
 /*--------------------------------------------------*/
 
 
-// echo '<pre>';
-// print_r($result);
-// gettype($result);
 
-echo $where_nickname;
-echo "<br>";
-echo $where_password;
-echo "<br>";
-echo $where_nickname_password;
-echo "<br>";
-echo $sql_update;
-echo "<br>";
-die("run to here.");
 
 
 $stmt_update = mysqli_prepare($db, $sql_update);
@@ -190,33 +180,28 @@ $stmt_update = mysqli_prepare($db, $sql_update);
 
 
 /*--------------------------------------------------*/
-if($nickname !== ""){
+if(($nickname !== "") && ($password === "")){
     // 如果是想改暱稱，這樣綁定
-    mysqli_stmt_bind_param($stmt_check, "ss", $nickname, $_SESSION['useraccount']);
-    echo "有綁定暱稱";
+    mysqli_stmt_bind_param($stmt_update, "ss", $nickname, $_SESSION['useraccount']);
+    echo $nickname;
 }
 
-if($password !== ""){
+if(($nickname === "") && ($password !== "")){
     // 如果是想改密碼，這樣綁定
     $hash = hash("sha256", $password);
-    mysqli_stmt_bind_param($stmt_check, "ss", $hash , $_SESSION['useraccount']);
+    mysqli_stmt_bind_param($stmt_update, "ss", $hash , $_SESSION['useraccount']);
     echo "有綁定密碼";
 }
 
 if(($nickname !== "") && ($password !== "")){
     // 如果想改暱稱、密碼，這樣綁定
     $hash = hash("sha256", $password);
-    mysqli_stmt_bind_param($stmt_check, "sss", $nickname, $hash , $_SESSION['useraccount']);
+    mysqli_stmt_bind_param($stmt_update, "sss", $nickname, $hash , $_SESSION['useraccount']);
     echo "有綁定暱稱、密碼";
 }
 /*--------------------------------------------------*/
 
-// echo '<pre>';
-// print_r($result);
-// gettype($result);
 
-echo "<br>";
-die("run to here.");
 
 
 mysqli_stmt_execute($stmt_update);
