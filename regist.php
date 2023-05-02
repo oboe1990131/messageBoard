@@ -6,6 +6,11 @@
         <!-- 使用者預設看到畫面的大小比例 -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Regist</title>
+        <style>
+            button{
+                width: 80px; height: 30px;
+            }
+        </style>
     </head>
 
     <body>
@@ -30,7 +35,7 @@
                 <input type="text"name="nickname"/>
             </p>
             <hr>
-            <button type="submit" style="width: 80px; height: 30px">送出</button>
+            <button type="submit">送出</button>
         </form>
         <a href="login.php">回登入頁</a>
     </body>

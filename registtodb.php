@@ -7,9 +7,8 @@ $nickname = (isset($_POST["nickname"])) ? trim($_POST["nickname"]) : null;
 
 
 // 這邊先確認使用者是否有欄位沒填到資料
-// TODO 1這邊我先把判斷式改成這樣子 (雖然這樣子有點長)  2或者，我在加一層if else判斷式
-if(($useraccount == "" || $useraccount == null) || ($password == "" || $password == null) || ($passwordoublechk == "" || $passwordoublechk == null) || ($nickname == "" || $nickname == null)){
-    
+// 這邊我先把判斷式改成這樣子 (雖然這樣子有點長)  或者，我在加一層if else判斷式  
+if(($useraccount === "" || $useraccount === null) || ($password === "" || $password === null) || ($passwordoublechk === "" || $passwordoublechk === null) || ($nickname === "" || $nickname === null)){
     echo "您似乎有欄位沒填到，請再檢查一下!";
     header("Refresh:2; url=./regist.php");
 }
@@ -32,7 +31,6 @@ else{
         //我用mysqli_stmt_get_result()取得我剛剛查詢得到哦東西，會是一列陣列
         //再用mysqli_num_rows()函數，來得知  "重複的筆數"  是幾筆。(你會得到一個整數結果)
 
-        
         if(mysqli_num_rows($result_check) > 0){
             echo '<script>alert("這個帳號或暱稱已經有人註冊了，請重新輸入！")</script>';
             header("Refresh:0; url=./regist.php");
