@@ -12,10 +12,10 @@ $member_id = $_SESSION["member_id"];
 //先檢驗id，看使用者有沒有利用開發工具偷改id來竄改別人留言
 include ("connect.php");
 $sql_chkid = "SELECT COUNT(*)
-        FROM `usermessage` AS u
-        LEFT JOIN `member` AS m
-        ON u.`auther_id` = m.`member_id`
-        WHERE `id`= ? AND `auther_id` = ?";
+                FROM `usermessage` AS u
+                LEFT JOIN `member` AS m
+                ON u.`auther_id` = m.`member_id`
+                WHERE `id`= ? AND `auther_id` = ?";
 $stmt_chkid = mysqli_prepare($db, $sql_chkid);
 mysqli_stmt_bind_param($stmt_chkid, "ii", $id, $member_id);
 mysqli_stmt_execute($stmt_chkid);
