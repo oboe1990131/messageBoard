@@ -35,43 +35,43 @@ $select_result = mysqli_stmt_get_result($stmt_select);
     </head>
 
     <body>
-    <h2 id="h">心情抒發區<br></h2>
-    <hr/>
+        <h2 id="h">心情抒發區<br></h2>
+        <hr/>
 
-    <a href="indext.php">回首頁</a>
+        <a href="indext.php">回首頁</a>
 
-    <form action="createtodb.php" method="post">
-        <table>
-            <tr>
-                <td>您的大名:</td>
-                <td><?php echo $_SESSION["useraccount"]; ?><br><br></td>
-            </tr>
-            
-            <tr>
-                <td>您的留言:</td>
-                <td><textarea cols="100" rows="10" name="message"></textarea><br><br></td> 
-            </tr>
+        <form action="createtodb.php" method="post">
+            <table>
+                <tr>
+                    <td>您的大名:</td>
+                    <td><?php echo $_SESSION["useraccount"]; ?><br><br></td>
+                </tr>
+                
+                <tr>
+                    <td>您的留言:</td>
+                    <td><textarea cols="100" rows="10" name="message"></textarea><br><br></td> 
+                </tr>
 
-            <tr>
-                <td>您現在心情：</td>
-            </tr>
+                <tr>
+                    <td>您現在心情：</td>
+                </tr>
 
-            <?php
-            while($emotion = mysqli_fetch_array($select_result)):
-            ?>
+                <?php
+                while($emotion = mysqli_fetch_array($select_result)):
+                ?>
 
-            <tr>
-                <td><label><?php echo $emotion["mood"];?></label></td>
-                <td><input type="radio" name="mood" id="<?php echo $emotion["mood_id"]?>" value="<?php echo $emotion["id"]?>"></td>                
-            </tr>
+                <tr>
+                    <td><label><?php echo $emotion["mood"];?></label></td>
+                    <td><input type="radio" name="mood" id="<?php echo $emotion["mood_id"]?>" value="<?php echo $emotion["id"]?>"></td>                
+                </tr>
 
-            <?php
-            endwhile
-            ?>
+                <?php
+                endwhile
+                ?>
 
-            <br>
-            <button type="submit" id="btn">送出</button>
-        </table>
-    </form>
+                <br>
+                <button type="submit" id="btn">送出</button>
+            </table>
+        </form>
     </body>
 </html>

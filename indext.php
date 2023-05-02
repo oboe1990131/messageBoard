@@ -41,6 +41,9 @@ $result_find = mysqli_stmt_get_result($stmt_find);
             margin-left: auto;
             margin-right: auto;
         }
+        button{
+          width: 80px; height: 30px;
+        }
       </style>
     </head>
 
@@ -52,7 +55,7 @@ $result_find = mysqli_stmt_get_result($stmt_find);
         <form action="indext.php" method="get">
             請輸入欲查詢：
             <input type="text" name="find">
-            <button type="submit" style="width: 80px; height: 30px;">送出</button>
+            <button type="submit">送出</button>
         </form>
         
         <a href="indext.php">回首頁</a>

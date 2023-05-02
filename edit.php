@@ -38,65 +38,63 @@ $result_select = mysqli_stmt_get_result($stmt_select);
 
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Edit page</title>
-    <style>
-        table{
-            margin-left: auto;
-            margin-right: auto;
-        }
-        btn{
-            width: 80px; height: 30px;
-        }
-        body,h, p{
-            text-align:center;
-        }
-    </style>
-</head>
+    <head>
+        <title>Edit page</title>
+        <style>
+            table{
+                margin-left: auto;
+                margin-right: auto;
+            }
+            button{
+                width: 80px; height: 30px;
+            }
+            body,h, p{
+                text-align:center;
+            }
+        </style>
+    </head>
 
-<body>
-    <h1 id="h">留言編輯區 </h1>
-    <p id="p">如果覺得剛剛說的有不妥的地方，再修改一下吧～</p>
-    <hr/>
+    <body>
+        <h1 id="h">留言編輯區 </h1>
+        <p id="p">如果覺得剛剛說的有不妥的地方，再修改一下吧～</p>
+        <hr/>
 
-    <a href="indext.php">取消編輯</a>
-    <br>
+        <a href="indext.php">取消編輯</a>
+        <br>
 
-<!--基本上同新增頁那邊的邏輯，只差在我是改成拉出特定資料-->
-<!--但，現在有一個問題，我要抓出特定使用者的資料，所以，當使用者按下編輯鍵時，我們就要先get他的特定留言 這樣我們才能比對-->
-    <form action="edittodb.php" method="post">
-        <table>
-            <tr>
-                <td><label>您的大名：<?php echo $_SESSION["useraccount"]; ?></label></td>
-                <td><input type="hidden" name="id" value="<?php echo $row["id"]; ?>"><br><br></td>
-            </tr>
+        <form action="edittodb.php" method="post">
+            <table>
+                <tr>
+                    <td><label>您的大名：<?php echo $_SESSION["useraccount"]; ?></label></td>
+                    <td><input type="hidden" name="id" value="<?php echo $row["id"]; ?>"><br><br></td>
+                </tr>
 
-            <tr>
-                <td><label>您的留言</label></td>
-                <td><textarea cols="100" rows="10" name="message"><?php echo str_replace('<br />', "\r\n", $row["message"]); ?></textarea></td>
-            </tr>
+                <tr>
+                    <td><label>您的留言</label></td>
+                    <td><textarea cols="100" rows="10" name="message"><?php echo str_replace('<br />', "\r\n", $row["message"]); ?></textarea></td>
+                </tr>
 
-            <tr>
-                <td><p>請告訴我們您現在的心情如何：</p></td>
-            </tr>
+                <tr>
+                    <td><p>請告訴我們您現在的心情如何：</p></td>
+                </tr>
 
-            <?php
-            while($emotion = mysqli_fetch_array($result_select)):
-            ?>
+                <?php
+                while($emotion = mysqli_fetch_array($result_select)):
+                ?>
 
-            <tr>
-                <td><?php echo $emotion["mood"];?></td>
-                <td><input type="radio" name="mood" id="<?php echo $emotion["mood_id"];?>" value="<?php echo $emotion["id"];?>"  <?php if($rowtest == $emotion["id"]){ echo "checked";}?>></td>
-            </tr>
+                <tr>
+                    <td><?php echo $emotion["mood"];?></td>
+                    <td><input type="radio" name="mood" id="<?php echo $emotion["mood_id"];?>" value="<?php echo $emotion["id"];?>"  <?php if($rowtest == $emotion["id"]){ echo "checked";}?>></td>
+                </tr>
 
-            <?php
-            endwhile
-            ?>
+                <?php
+                endwhile
+                ?>
 
-            <br>
-            <button type="submit" id="btn">送出</button>
-            <br>
-        </table>
-    </form>
-</body>
+                <br>
+                <button type="submit" id="btn">送出</button>
+                <br>
+            </table>
+        </form>
+    </body>
 </html>
