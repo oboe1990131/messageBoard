@@ -14,8 +14,6 @@ $sql = "SELECT u.`id`, m.`nickname`, u.`message`, u.`auther_id`, m.`member_id`, 
         FROM `usermessage` AS u
         LEFT JOIN `member` AS m ON u.`auther_id` = m.`member_id`
         LEFT JOIN `emotion` AS e ON u.`mood` = e.`id`";
-
-// TODO這邊sql語法的模組化技術成分很高，要多看
 $where = ($find != "" && isset($find)) ? " WHERE `nickname` LIKE ? OR `message` LIKE ?" : "";
 $order = " ORDER BY u.`id` DESC";
 $query_string = $sql.$where.$order;
@@ -23,7 +21,7 @@ $query_string = $sql.$where.$order;
 $stmt_find = mysqli_prepare($db, $query_string);
 
 if($find != "" && isset($find)){
-  $like_str = "%{$find}%";
+  $like_str = "%$find%";
   mysqli_stmt_bind_param($stmt_find, "ss", $like_str, $like_str);
 }
 
@@ -101,8 +99,6 @@ $result_find = mysqli_stmt_get_result($stmt_find);
         </table>
 
         <script>
-          <?php //123 ?>
-          //456
               function confirmDelete(id){
                 if(confirm("確認要刪除這篇留言嗎?")){
                   window.location.href="delete.php?id="+id;
@@ -113,6 +109,5 @@ $result_find = mysqli_stmt_get_result($stmt_find);
                 }
               }
         </script>
-
     </body>
 </html>

@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- 編碼方式 -->
     <meta charset="UTF-8">
-    <!-- 使用者預設看到畫面的大小比例 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- 樣式外部連結 -->
     <link rel="stylesheet" type="text/css" href="loginstyle.css">

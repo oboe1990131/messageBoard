@@ -1,189 +1,125 @@
 <?php
 
-// 用if...elseif...系列去分類
-
-
-
-
+// 使用者送甚麼過來，我就做甚麼事，但，這邊的精神是在於sql語句的模組化
 session_start();
 if(!isset($_SESSION["useraccount"])){
-    echo '<script>alert("請循正規管道登入。")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./login.php">';
-    die;
+    echo "請循正規管道登入!";
+    header("Refresh:2; url=./login.php");
+    exit;
 }
 
+// 剛剛前端的欄位如果有東西就放進變數裡，如果沒東西就把null放進去
+// TODO這邊目前的工作   驗證欄位有沒有被拔掉，       那如果今天使用者沒輸入東西   就是空字串 (在isset那邊是會被認定有東西的)  、  有輸入東西  都會被視為isset而通過，     但，      這邊其實不怕沒有打字的空字串通過，      因為下一關就是負責攔截輸入不完全的
+$password = (isset($_POST["password"])) ? $_POST["password"] : null;
+$passwordoublechk = (isset($_POST["passwordoublechk"])) ? $_POST["passwordoublechk"] : null;
+$nickname = (isset($_POST["nickname"])) ? $_POST["nickname"] : null;
 
-$password = (isset($_POST['password'])) ? $_POST['password'] : null;
-$passwordoublechk = (isset($_POST['passwordoublechk'])) ? $_POST['passwordoublechk'] : null;
-$nickname = (isset($_POST['nickname'])) ? $_POST['nickname'] : null;
+// TODO這邊的工作  篩掉輸入不完全
+// 只有打密碼
+// 只有打密碼doublechk
+// 打暱稱+密碼
+// 打暱稱+密碼doublechk
+// 都沒打                 ，          這邊就統整出，你只要有打密碼，你就要全打，你不能只打一個
+if(($password !== "" && $passwordoublechk === "") || ($password === "" && $passwordoublechk !== "") || ($nickname === ""  && $password === "" && $passwordoublechk === "")){
+    echo "你的欄位沒有填完全，請再確認!";
+    header("Refresh:2; url=./membercenter.php");
+    exit;
+}
+elseif($password === null || $passwordoublechk === null || $nickname === null){
+    echo "你的欄位沒有填完全，請再確認!";
+    header("Refresh:2; url=./membercenter.php");
+    exit;
+}
+// 還有is_null()函數可用，這個就看我自己了，我還要交代清楚  為何我要用嚴格的判斷，其實，我可以用==來判斷就好，或是，前面用===後面用==
 
+/*-------------依據使用者可能會修改：  1暱稱、  2密碼、  3暱稱+密碼---------------------------*/
+include("connect.php");
+$sql_check = "SELECT `useraccount`, `password`, `nickname`
+                FROM `member`";
+/*----------------------------------------------*/
+                // 如果想查詢暱稱有無重複，就加這句
+$where_nickname = ($nickname !== "" && $password === "") ? " WHERE `nickname` = ? AND `useraccount` != ?" : "";
 
+                // 如果想查詢密碼有無跟舊的一樣，就加這句
+$where_password = ($nickname === "" && $password !== "") ? " WHERE `useraccount` = ? AND `password` = ?" : "";
 
+                // 如果想查暱稱、密碼，就加這句     但，這樣會有個問題   暱稱重複會被攔下來、密碼重複也會被攔下來
+$where_nickname_password = ($nickname !== "" && $password !== "") ? " WHERE (`useraccount` = ? AND `password` = ?) OR (`nickname` = ? AND `useraccount` != ?)" : "";
+/*-----------------------------------------------*/
+$sql_check .= $where_nickname.$where_password.$where_nickname_password;
 
+$stmt_check = mysqli_prepare($db, $sql_check);
+/*--------------------------------------------------*/
+if($nickname !== "" && $password === ""){
+    // 如果是想查詢暱稱有無重複，這樣綁定
+    mysqli_stmt_bind_param($stmt_check, "ss", $nickname, $_SESSION["useraccount"]);
+}
+elseif($nickname === "" && $password !== ""){
+    // 如果是想查詢密碼有無重複舊的，這樣綁定
+    $hash = hash("sha256", $password);
+    mysqli_stmt_bind_param($stmt_check, "ss", $_SESSION["useraccount"], $hash);
+}
+elseif($nickname !== "" && $password !== ""){
+    // 如果想查詢暱稱有無重複、密碼有無重複舊的，這樣綁定
+    $hash = hash("sha256", $password);
+    mysqli_stmt_bind_param($stmt_check, "ssss", $_SESSION["useraccount"], $hash, $nickname, $_SESSION["useraccount"]);
+}
+/*--------------------------------------------------*/
+mysqli_stmt_execute($stmt_check);
+$result_check = mysqli_stmt_get_result($stmt_check);
+$result_check_content = mysqli_fetch_array($result_check);
+$result_check_content["useraccount"] = (isset($result_check_content["useraccount"])) ? $result_check_content["useraccount"] : null;
 
+/*----------------------這邊的工作：幫我看重複     (這邊我不用筆數判斷了，我用帳號來判斷)----------------------------*/
+// 如果我查到比數不等於0，          就是有資料，             只要看那個帳號，就可以判斷是甚麼問題
+if($result_check_content["useraccount"] === $_SESSION["useraccount"]){
+    echo "密碼不可與舊的相同，請再確認!";
+    header("Refresh:2; url=./membercenter.php");
+    exit;
+}
+elseif($result_check_content["useraccount"] !== $_SESSION["useraccount"] && ($result_check_content["useraccount"] !== null)){
+    echo "暱稱不可與別人相同，請再確認!";
+    header("Refresh:2; url=./membercenter.php");
+    exit;
+}
+/*--------------------------------------------------*/
 
-// 看密碼欄位是否有被拔掉
-if($password === null || $passwordoublechk === null || $nickname === null){
-    echo '<script>alert("您似乎有欄位沒填到，請再檢查一下！")</script>';
-    echo '<meta http-equiv="refresh" content="0; url=./membercenter.php">';
+/*---------------------檢查沒問題之後，就是去更新使用者想要更新的內容-----------------------------*/
+$sql_update = "UPDATE `member`";
+
+/*--------------------------------------------------*/
+$where_nickname = ($nickname !== "" && $password === "") ? " SET `nickname` = ? WHERE `useraccount` = ?" : "";
+
+$where_password = ($nickname === "" && $password !== "") ? " SET `password` = ? WHERE `useraccount` = ?" : "";
+
+$where_nickname_password = ($nickname !== "" && $password !== "") ? " SET `nickname` = ?, `password` = ? WHERE `useraccount` = ?" : "";
+
+$sql_update .= $where_nickname.$where_password.$where_nickname_password;
+/*--------------------------------------------------*/
+
+$stmt_update = mysqli_prepare($db, $sql_update);
+
+/*--------------------------------------------------*/
+if($nickname !== "" && $password === ""){
+    // 如果是想改暱稱，這樣綁定
+    mysqli_stmt_bind_param($stmt_update, "ss", $nickname, $_SESSION["useraccount"]);
 }
 
-
-
-
-
-
-
-
-// 使用者的密碼欄位為空，代表使用者             """"""""只想單獨改暱稱"""""""""
-
-
-elseif(($password === "" || $passwordoublechk === "") && ($nickname !== "")){
-
-    // 我就看使用者輸入的暱稱是否有跟別人重複，那這邊的邏輯根本就是registtodb那邊的邏輯
-    include("connect.php");
-    $sql_check = "SELECT `nickname`
-                    FROM `member` 
-                    WHERE `nickname` = ?";
-    $stmt_check = mysqli_prepare($db, $sql_check);
-    mysqli_stmt_bind_param($stmt_check, "s", $nickname);
-    mysqli_stmt_execute($stmt_check);
-    $result_check = mysqli_stmt_get_result($stmt_check);
-    //我用mysqli_stmt_get_result()取得我剛剛查詢得到哦東西，會是一列陣列
-    //再用mysqli_num_rows()函數，來得知  "重複的筆數"  是幾筆。(你會得到一個整數結果)
-
-    if(mysqli_num_rows($result_check) > 0){
-        echo '<script>alert("這個暱稱已經有人註冊了，請重新輸入！")</script>';
-        echo '<meta http-equiv="refresh" content="0; url=./regist.php">';
-    }
-    else{
-        // 我就幫使用者把他輸入的暱稱更新進資料庫裏面
-        $sql_insert = "UPDATE `member` SET `nickname` = ? WHERE `member_id` = ?";
-        $stmt_insert = mysqli_prepare($db, $sql_insert);
-        mysqli_stmt_bind_param($stmt_insert, "si", $nickname, $_SESSION['member_id']);
-        mysqli_stmt_execute($stmt_insert);
-        echo "<script>";
-        echo "alert('您已成功更改暱稱')";
-        echo "</script>";
-        echo '<meta http-equiv="refresh" content="0; url=./indext.php">';
-    }
+if($nickname === "" && $password !== ""){
+    // 如果是想改密碼，這樣綁定
+    $hash = hash("sha256", $password);
+    mysqli_stmt_bind_param($stmt_update, "ss", $hash , $_SESSION["useraccount"]);
 }
 
-
-
-
-
-
-
-
-// 使用者只想單獨改密碼
-elseif(($password !== "" && $passwordoublechk !== "") && ($nickname === "")){
-
-    // 看兩次輸入的密碼是否一樣
-    if($password != $passwordoublechk){
-        echo '<script>alert("你兩次輸入的密碼不一樣")</script>';
-        echo '<meta http-equiv="refresh" content="0; url=./membercenter.php">';
-    }
-    else{
-        // 把使用者輸入的密碼雜湊
-        $hash = hash("sha256", $password); // 將密碼做雜湊處理
-                
-        //查詢密碼是否與舊的一樣
-        include("connect.php");
-        $sql_check = "SELECT * FROM `member` WHERE `useraccount` = ? AND `password` = ?";
-        $stmt_check = mysqli_prepare($db, $sql_check);
-        mysqli_stmt_bind_param($stmt_check, "ss", $_SESSION["useraccount"], $hash);
-        mysqli_stmt_execute($stmt_check);
-        $result_check = mysqli_stmt_get_result($stmt_check);
-        //我用mysqli_stmt_get_result()取得我剛剛查詢得到哦東西，會是一列陣列
-        //再用mysqli_num_rows()函數，來得知  "重複的筆數"  是幾筆。(你會得到一個整數結果)
-        
-        if(mysqli_num_rows($result_check) != 0){
-            echo '<script>alert("新密碼不能與舊密碼相同，請重新輸入！")</script>';
-            echo '<meta http-equiv="refresh" content="0; url=./membercenter.php">';
-        }
-        else{
-            //執行INSERT INTO語句，更新會員資料
-            $sql = "UPDATE `member` SET `password` = ? WHERE `useraccount` = ?";
-            $stmt = mysqli_prepare($db, $sql);            
-            mysqli_stmt_bind_param($stmt, "ss", $hash, $_SESSION["useraccount"]);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-            echo '<script>alert("密碼更新成功！")</script>';
-            echo '<meta http-equiv="refresh" content="0; url=./indext.php">';
-        }
-    }
+if($nickname !== "" && $password !== ""){
+    // 如果想改暱稱、密碼，這樣綁定
+    $hash = hash("sha256", $password);
+    mysqli_stmt_bind_param($stmt_update, "sss", $nickname, $hash , $_SESSION["useraccount"]);
 }
+/*--------------------------------------------------*/
 
+mysqli_stmt_execute($stmt_update);
 
-
-
-
-
-
-
-
-
-// 使用者想改密碼、暱稱
-elseif(($password !== "" && $passwordoublechk !== "") && ($nickname !== "")){
-    
-    // 看兩次輸入的密碼是否一樣
-    if($password != $passwordoublechk){
-        echo '<script>alert("你兩次輸入的密碼不一樣")</script>';
-        echo '<meta http-equiv="refresh" content="0; url=./membercenter.php">';
-    }
-    else{
-        
-        // 把使用者輸入的密碼雜湊
-        $hash = hash("sha256", $password); // 將密碼做雜湊處理
-
-
-        //查詢密碼是否與舊的一樣
-        include("connect.php");
-        $sql_check = "SELECT * FROM `member` WHERE `useraccount` = ? AND `password` = ?";
-        $stmt_check = mysqli_prepare($db, $sql_check);
-        mysqli_stmt_bind_param($stmt_check, "ss", $_SESSION["useraccount"], $hash);
-        mysqli_stmt_execute($stmt_check);
-        $result_check = mysqli_stmt_get_result($stmt_check);
-        //我用mysqli_stmt_get_result()取得我剛剛查詢得到哦東西，會是一列陣列
-        //再用mysqli_num_rows()函數，來得知  "重複的筆數"  是幾筆。(你會得到一個整數結果)
-        
-        if(mysqli_num_rows($result_check) != 0){
-            echo '<script>alert("新密碼不能與舊密碼相同，請重新輸入！")</script>';
-            echo '<meta http-equiv="refresh" content="0; url=./membercenter.php">';
-        }
-        else{
-            // 查詢使用者的暱稱是否有重複
-            include("connect.php");
-            $sql_check = "SELECT `nickname`
-                            FROM `member` 
-                            WHERE `nickname` = ?";
-            $stmt_check = mysqli_prepare($db, $sql_check);
-            mysqli_stmt_bind_param($stmt_check, "s", $nickname);
-            mysqli_stmt_execute($stmt_check);
-            $result_check = mysqli_stmt_get_result($stmt_check);
-
-            
-            //執行INSERT INTO語句，更新會員資料
-            $sql = "UPDATE `member` SET `password` = ? WHERE `useraccount` = ?";
-            $stmt = mysqli_prepare($db, $sql);            
-            mysqli_stmt_bind_param($stmt, "ss", $hash, $_SESSION["useraccount"]);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-            echo '<script>alert("密碼更新成功！")</script>';
-            echo '<meta http-equiv="refresh" content="0; url=./indext.php">';
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
+echo '<script>alert("更新完成")</script>';
+echo '<meta http-equiv="refresh" content="0; url=./indext.php">';
 ?>

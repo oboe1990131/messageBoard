@@ -14,7 +14,6 @@ mysqli_stmt_bind_param($stmt, "s", $useraccount);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $row = mysqli_fetch_array($result);
-
 ?>
 
 <!DOCTYPE html>
@@ -29,7 +28,7 @@ $row = mysqli_fetch_array($result);
     <h1 style="text-align: center">會員中心</h1>
     <hr>
 
-    <form action="updatemembercenter copy.php" method="post">
+    <form action="updatemembercenter.php" method="post">
         <p>
             <label>帳號:<?php  echo $row['useraccount'];  ?></label>
         </p>
@@ -50,8 +49,6 @@ $row = mysqli_fetch_array($result);
         <button type="submit" style="width: 150px; height: 30px">修改</button>
     </form>
     
-    
     <a href="indext.php">回首頁</a>
-
 </body>
 </html>

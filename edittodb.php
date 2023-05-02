@@ -14,9 +14,9 @@ $mood = $_POST["mood"];
 //先檢驗id，看使用者有沒有利用開發工具偷改id來竄改別人留言
 include ("connect.php");
 $sql_chkid = "SELECT u.`id`, u.`message`, u.`auther_id`, m.`member_id`
-        FROM `usermessage` AS u
-        LEFT JOIN `member` AS m ON u.`auther_id` = m.`member_id`
-        WHERE `id`= ? AND `auther_id` = ?";
+                FROM `usermessage` AS u
+                LEFT JOIN `member` AS m ON u.`auther_id` = m.`member_id`
+                WHERE `id`= ? AND `auther_id` = ?";
 $stmt_chkid = mysqli_prepare($db, $sql_chkid);
 mysqli_stmt_bind_param($stmt_chkid, "ii", $id, $member_id);
 mysqli_stmt_execute($stmt_chkid);
@@ -40,7 +40,6 @@ if($message == ""){
     exit;
 }
 else{
-    $message = htmlspecialchars($message);
     $message = nl2br($message);
     $message = str_replace("\r\n", "", $message);
     $message = mysqli_real_escape_string($db, $message);
