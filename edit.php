@@ -45,12 +45,18 @@ $result_select = mysqli_stmt_get_result($stmt_select);
             margin-left: auto;
             margin-right: auto;
         }
+        btn{
+            width: 80px; height: 30px;
+        }
+        body,h, p{
+            text-align:center;
+        }
     </style>
 </head>
 
-<body style="text-align:center">
-    <h1 style="text-align: center;">留言編輯區 </h1>
-    <p style="text-align: center;">如果覺得剛剛說的有不妥的地方，再修改一下吧～</p>
+<body>
+    <h1 id="h">留言編輯區 </h1>
+    <p id="p">如果覺得剛剛說的有不妥的地方，再修改一下吧～</p>
     <hr/>
 
     <a href="indext.php">取消編輯</a>
@@ -88,7 +94,7 @@ $result_select = mysqli_stmt_get_result($stmt_select);
             ?>
 
             <br>
-            <button type="submit" style="width: 80px; height: 30px">送出</button>
+            <button type="submit" id="btn">送出</button>
             <br>
         </table>
     </form>

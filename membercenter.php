@@ -22,10 +22,18 @@ $row = mysqli_fetch_array($result);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>membercenter</title>
+    <style>
+        btn{
+            width: 150px; height: 30px;
+        }
+        h1{
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
-    <h1 style="text-align: center">會員中心</h1>
+    <h1>會員中心</h1>
     <hr>
 
     <form action="updatemembercenter.php" method="post">
@@ -40,13 +48,12 @@ $row = mysqli_fetch_array($result);
             <label>確認新密碼:</label>
             <input type="password" name="passwordoublechk"/>
         </p>
-
         <p>
             <label>暱稱:</label>
             <input type="text" name="nickname" value="<?php echo htmlspecialchars($row["nickname"]);?>">
         </p>
         
-        <button type="submit" style="width: 150px; height: 30px">修改</button>
+        <button type="submit" id="btn">修改</button>
     </form>
     
     <a href="indext.php">回首頁</a>

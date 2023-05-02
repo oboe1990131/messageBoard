@@ -25,11 +25,17 @@ $select_result = mysqli_stmt_get_result($stmt_select);
                 margin-left: auto;
                 margin-right: auto;
             }
+            body, h{
+                text-align:center;
+            }
+            btn{
+                width: 80px; height: 30px;
+            }
         </style>
     </head>
 
-    <body style="text-align:center">
-    <h2 style="text-align:center">心情抒發區<br></h2>
+    <body>
+    <h2 id="h">心情抒發區<br></h2>
     <hr/>
 
     <a href="indext.php">回首頁</a>
@@ -64,7 +70,7 @@ $select_result = mysqli_stmt_get_result($stmt_select);
             ?>
 
             <br>
-            <button type="submit" style="width: 80px; height: 30px">送出</button>
+            <button type="submit" id="btn">送出</button>
         </table>
     </form>
     </body>
