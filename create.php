@@ -28,7 +28,7 @@ $select_result = mysqli_stmt_get_result($stmt_select);
             body, h{
                 text-align:center;
             }
-            btn{
+            button{
                 width: 80px; height: 30px;
             }
         </style>
@@ -70,7 +70,7 @@ $select_result = mysqli_stmt_get_result($stmt_select);
                 ?>
 
                 <br>
-                <button type="submit" id="btn">送出</button>
+                <button type="submit">送出</button>
             </table>
         </form>
     </body>
