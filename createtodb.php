@@ -10,7 +10,7 @@ if(!isset($_SESSION["useraccount"])){
 include ("connect.php");
 $id = mysqli_real_escape_string($db, $_SESSION["member_id"]);
 $message = (isset($_POST["message"])) ? $_POST["message"] : null;
-$mood = $_POST['mood'];
+$mood = $_POST["mood"];
 
 if(($message == "" || !isset($message)) || ($mood == "" || !isset($mood))){
     echo '<script>alert("您似乎有漏填了，請再確定一下！")</script>';

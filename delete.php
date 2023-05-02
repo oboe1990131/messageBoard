@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(!isset($_SESSION['useraccount'])){
+if(!isset($_SESSION["useraccount"])){
     header("Refresh:3; url=./login.php");
     echo "請遵循正規管道登入";
     exit;

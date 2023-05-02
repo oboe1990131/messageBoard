@@ -1,13 +1,13 @@
 <?php
 session_start();
-if(!isset($_SESSION['useraccount'])){
+if(!isset($_SESSION["useraccount"])){
     header("Refresh:3; url=./login.php");
     echo "請遵循正規管道登入";
     exit;
 }
 
-include('connect.php');
-$useraccount = $_SESSION['useraccount'];   //抓取是哪個帳號要看資料
+include("connect.php");
+$useraccount = $_SESSION["useraccount"];   //抓取是哪個帳號要看資料
 $sql = "SELECT * FROM `member` WHERE `useraccount`= ?";
 $stmt = mysqli_prepare($db, $sql);
 mysqli_stmt_bind_param($stmt, "s", $useraccount);
@@ -23,7 +23,7 @@ $row = mysqli_fetch_array($result);
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>membercenter</title>
         <style>
-            btn{
+            button{
                 width: 150px; height: 30px;
             }
             h1{
@@ -38,7 +38,7 @@ $row = mysqli_fetch_array($result);
 
         <form action="updatemembercenter.php" method="post">
             <p>
-                <label>帳號:<?php  echo $row['useraccount'];  ?></label>
+                <label>帳號:<?php  echo $row["useraccount"];  ?></label>
             </p>
             <p>
                 <label>新密碼:</label>
@@ -53,7 +53,7 @@ $row = mysqli_fetch_array($result);
                 <input type="text" name="nickname" value="<?php echo htmlspecialchars($row["nickname"]);?>">
             </p>
             
-            <button type="submit" id="btn">修改</button>
+            <button type="submit">修改</button>
         </form>
         
         <a href="indext.php">回首頁</a>

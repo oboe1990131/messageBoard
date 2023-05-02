@@ -71,7 +71,7 @@ $result_select = mysqli_stmt_get_result($stmt_select);
 
                 <tr>
                     <td><label>您的留言</label></td>
-                    <td><textarea cols="100" rows="10" name="message"><?php echo str_replace('<br />', "\r\n", $row["message"]); ?></textarea></td>
+                    <td><textarea cols="100" rows="10" name="message"><?php echo str_replace("<br />", "\r\n", $row["message"]); ?></textarea></td>
                 </tr>
 
                 <tr>
