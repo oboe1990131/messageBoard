@@ -20,7 +20,7 @@ $rowtest = intval($row["mood"]);
 
 if(mysqli_num_rows($result) == 0){
     echo '<script>alert("你編輯錯留言了!")</script>';
-    header("Refresh:0; url=./login.php");
+    header("Refresh:0; url=./indext.php");
     exit;
 }
 else{
@@ -85,6 +85,7 @@ $result_select = mysqli_stmt_get_result($stmt_select);
                 <tr>
                     <td><?php echo $emotion["mood"];?></td>
                     <td><input type="radio" name="mood" id="<?php echo $emotion["mood_id"];?>" value="<?php echo $emotion["id"];?>"  <?php if($rowtest == $emotion["id"]){ echo "checked";}?>></td>
+                    <!-- 我把emotion資料表中的mood_id刪掉了，因為過度複雜，裡面的內容是  happy very_happy  annoy  very_annoy  angry  very_angry -->
                 </tr>
 
                 <?php

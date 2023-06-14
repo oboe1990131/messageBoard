@@ -25,6 +25,7 @@ $row = mysqli_fetch_array($result);
 if($row[0] == 0){
     echo '<script>alert("您刪錯留言了")</script>';
     header("Refresh:0; url=./indext.php");
+    // TODO 跳轉方式
     exit;
 }
 else{
